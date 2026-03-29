@@ -1,0 +1,124 @@
+name: Python Greetings Delivery Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  install-pip-deps:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Pipeline Definition
+        uses: actions/checkout@v6
+
+      - name: Run Build Action
+        uses: ./.github/actions/build
+
+  deploy-to-dev:
+    needs: install-pip-deps
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Pipeline Definition
+        uses: actions/checkout@v6
+        with:
+          clean: false
+      - name: Deploy to DEV
+        uses: ./.github/actions/deploy
+        with:
+          environment: "dev"
+          port: 7001
+
+  tests-on-dev:
+    needs: deploy-to-dev
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Pipeline Definition
+        uses: actions/checkout@v6
+        with:
+          clean: false
+      - name: Run Tests on DEV
+        uses: ./.github/actions/test
+        with:
+          environment: "dev"
+
+  deploy-to-stg:
+    needs: tests-on-dev
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Pipeline Definition
+        uses: actions/checkout@v6
+        with:
+          clean: false
+      - name: Deploy to STG
+        uses: ./.github/actions/deploy
+        with:
+          environment: "stg"
+          port: 7002
+
+  tests-on-stg:
+    needs: deploy-to-stg
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Pipeline Definition
+        uses: actions/checkout@v6
+        with:
+          clean: false
+      - name: Run Tests on STG
+        uses: ./.github/actions/test
+        with:
+          environment: "stg"
+
+  deploy-to-preprod:
+    needs: tests-on-stg
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Pipeline Definition
+        uses: actions/checkout@v6
+        with:
+          clean: false
+      - name: Deploy to PREPROD
+        uses: ./.github/actions/deploy
+        with:
+          environment: "preprod"
+          port: 7003
+
+  tests-on-preprod:
+    needs: deploy-to-preprod
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Pipeline Definition
+        uses: actions/checkout@v6
+        with:
+          clean: false
+      - name: Run Tests on PREPROD
+        uses: ./.github/actions/test
+        with:
+          environment: "preprod"
+
+  deploy-to-prod:
+    needs: tests-on-preprod
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Pipeline Definition
+        uses: actions/checkout@v6
+        with:
+          clean: false
+      - name: Deploy to PROD
+        uses: ./.github/actions/deploy
+        with:
+          environment: "prod"
+          port: 7004
+
+  tests-on-prod:
+    needs: deploy-to-prod
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Pipeline Definition
+        uses: actions/checkout@v6
+        with:
+          clean: false
+      - name: Run Tests on PROD
+        uses: ./.github/actions/test
+        with:
+          environment: "prod"
