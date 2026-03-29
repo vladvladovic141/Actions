@@ -24,6 +24,7 @@ jobs:
       - name: Cleanup pm2 processes
         run: pm2 delete all || EXIT /B 0
         shell: cmd
+        continue-on-error: true
 
       - name: Checkout Pipeline Definition
         uses: actions/checkout@v6
