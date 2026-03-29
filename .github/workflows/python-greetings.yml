@@ -22,7 +22,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Cleanup pm2 processes
-        run: pm2 delete all || EXIT /B 0
+        run: pm2 delete all || set "errorlevel=0"
         shell: cmd
         continue-on-error: true
 
