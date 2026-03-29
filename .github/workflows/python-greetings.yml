@@ -11,7 +11,9 @@ jobs:
     steps:
       - name: Checkout Pipeline Definition
         uses: actions/checkout@v6
-
+        with:
+          clean: false
+          
       - name: Run Build Action
         uses: ./.github/actions/build
 
