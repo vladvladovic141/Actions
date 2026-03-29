@@ -1,0 +1,27 @@
+name: 'Run API Tests'
+description: 'Action to run API tests against python-greetings service'
+inputs:
+  environment:
+    description: 'Environment to test'
+    required: true
+runs:
+  using: composite
+  steps:
+    - run: echo "Testing Python Greetings service has started on ${{ inputs.environment }} environment.."
+      shell: cmd
+    - name: Checkout Test Framework
+      uses: actions/checkout@v6
+      with:
+        repository: 'mtararujs/course-js-api-framework'
+        path: 'test-framework'
+        clean: false
+    - name: Install dependencies
+      working-directory: ./test-framework
+      run: npm install
+      shell: cmd
+    - name: Running API tests
+      working-directory: ./test-framework
+      run: npm run greetings greetings_${{ inputs.environment }}
+      shell: cmd
+    - run: echo "Testing Python Greetings service finished.."
+      shell: cmd
