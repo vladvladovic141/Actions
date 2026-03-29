@@ -21,11 +21,6 @@ jobs:
     needs: install-pip-deps
     runs-on: self-hosted
     steps:
-      - name: Cleanup pm2 processes
-        run: pm2 delete all || set "errorlevel=0"
-        shell: cmd
-        continue-on-error: true
-
       - name: Checkout Pipeline Definition
         uses: actions/checkout@v6
         with:
