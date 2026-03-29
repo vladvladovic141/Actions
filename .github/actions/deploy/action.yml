@@ -1,0 +1,37 @@
+name: 'Deploy Application/Service'
+description: 'Deploy python-greetings service via pm2'
+inputs:
+  environment:
+    description: 'Environment name (dev, stg, preprod, prod)'
+    required: true
+  port:
+    required: true
+runs:
+  using: composite
+  steps:
+    - run: echo "Deployment to ${{ inputs.environment }} environment has started.."
+      shell: cmd
+    - name: Checkout Python Service
+      uses: actions/checkout@v6
+      with:
+        repository: 'mtararujs/python-greetings'
+        path: 'python-service'
+        clean: false
+
+    - name: Setup Virtual Env
+      working-directory: ./python-service
+      run: |
+        python -m venv venv
+        .\venv\Scripts\python -m pip install -r requirements.txt
+      shell: cmd
+    - name: Cleanup of old running service
+      working-directory: ./python-service
+      run: pm2 delete greetings-app-${{ inputs.environment }} || EXIT 0
+      shell: cmd
+    - name: Running service
+      working-directory: ./python-service
+
+      run: pm2 start app.py --name greetings-app-${{ inputs.environment }} --interpreter "%CD%\venv\Scripts\python.exe" -- --port ${{ inputs.port }}
+      shell: cmd
+    - run: echo "Deployment to ${{ inputs.environment }} environment finished.."
+      shell: cmd
