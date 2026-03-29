@@ -1,0 +1,21 @@
+name: 'Build Application/Service'
+description: 'Install Python dependencies for greetings service'
+runs:
+  using: composite
+  steps:
+    - run: echo "Installing all required dependencies.."
+      shell: cmd
+    - name: Checkout Python Service
+      uses: actions/checkout@v6
+      with:
+        repository: 'mtararujs/python-greetings'
+        path: 'python-service'
+        clean: false
+    - name: Setup Virtual Env and Install
+      working-directory: ./python-service
+      run: |
+        python -m venv venv
+        .\venv\Scripts\python -m pip install -r requirements.txt
+      shell: cmd
+    - run: echo "Dependencies successfully installed in venv.."
+      shell: cmd
